@@ -105,8 +105,10 @@ def test_signup_invalid_email_returns_400():
     ]
     
     for email in invalid_emails:
+        # URL encode the email to handle special characters
+        encoded_email = quote(email, safe='')
         response = client.post(
-            f"/activities/Soccer%20Team/signup?email={email}"
+            f"/activities/Soccer%20Team/signup?email={encoded_email}"
         )
         assert response.status_code == 400
         assert response.json()["detail"] == "Invalid email format"
@@ -115,8 +117,10 @@ def test_signup_invalid_email_returns_400():
 def test_unregister_invalid_email_returns_400():
     """Test that invalid email format returns 400 for unregister"""
     email = "notanemail"
+    # URL encode the email to handle special characters
+    encoded_email = quote(email, safe='')
     response = client.delete(
-        f"/activities/Soccer%20Team/signup?email={email}"
+        f"/activities/Soccer%20Team/signup?email={encoded_email}"
     )
     
     assert response.status_code == 400
