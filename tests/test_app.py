@@ -1,4 +1,5 @@
 import copy
+from urllib.parse import quote
 
 import pytest
 from fastapi.testclient import TestClient
@@ -149,3 +150,20 @@ def test_signup_at_capacity_returns_400():
     
     assert response.status_code == 400
     assert response.json()["detail"] == "Activity is at maximum capacity"
+
+
+def test_signup_with_plus_sign_email():
+    """Test that emails with plus signs (for aliasing) are accepted"""
+    valid_emails_with_plus = [
+        "user+tag@mergington.edu",
+        "student+filter@example.com",
+    ]
+    
+    for email in valid_emails_with_plus:
+        # URL encode the email to handle special characters like +
+        encoded_email = quote(email, safe='')
+        response = client.post(
+            f"/activities/Art%20Club/signup?email={encoded_email}"
+        )
+        assert response.status_code == 200
+        assert email in activities["Art Club"]["participants"]

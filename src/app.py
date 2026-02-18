@@ -79,9 +79,9 @@ activities = {
 }
 
 # Email validation pattern (RFC 5321 compliant)
-# Disallows consecutive dots, leading/trailing dots, and special characters
+# Allows standard email formats including plus signs for aliasing
 EMAIL_PATTERN = re.compile(
-    r'^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$'
+    r'^[a-zA-Z0-9]+([._+-][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$'
 )
 
 
