@@ -95,7 +95,12 @@ def test_signup_invalid_email_returns_400():
         "missing@domain",
         "@nodomain.com",
         "spaces in@email.com",
-        "toolong" + "a" * 250 + "@domain.com"
+        "toolong" + "a" * 250 + "@domain.com",
+        "user..name@domain.com",  # consecutive dots
+        ".user@domain.com",  # leading dot
+        "user.@domain.com",  # trailing dot
+        "user@.domain.com",  # leading dot in domain
+        "user@domain..com",  # consecutive dots in domain
     ]
     
     for email in invalid_emails:
@@ -119,9 +124,17 @@ def test_unregister_invalid_email_returns_400():
 
 def test_signup_at_capacity_returns_400():
     """Test that signup fails when activity is at max capacity"""
-    # Fill the Chess Club to capacity (max_participants: 12)
-    # It already has 2 participants, so add 10 more
-    for i in range(10):
+    # Get current state of Chess Club
+    response = client.get("/activities")
+    chess_club = response.json()["Chess Club"]
+    current_participants = len(chess_club["participants"])
+    max_participants = chess_club["max_participants"]
+    
+    # Calculate how many spots are available
+    spots_available = max_participants - current_participants
+    
+    # Fill the activity to capacity
+    for i in range(spots_available):
         email = f"student{i}@mergington.edu"
         response = client.post(
             f"/activities/Chess%20Club/signup?email={email}"

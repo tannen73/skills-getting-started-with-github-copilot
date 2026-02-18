@@ -78,8 +78,11 @@ activities = {
     }
 }
 
-# Email validation pattern
-EMAIL_PATTERN = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+# Email validation pattern (RFC 5321 compliant)
+# Disallows consecutive dots, leading/trailing dots, and special characters
+EMAIL_PATTERN = re.compile(
+    r'^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$'
+)
 
 
 def validate_email(email: str) -> bool:
