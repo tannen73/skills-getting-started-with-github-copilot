@@ -86,3 +86,53 @@ def test_unregister_invalid_activity_returns_404():
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Activity not found"
+
+
+def test_signup_invalid_email_returns_400():
+    """Test that invalid email format returns 400"""
+    invalid_emails = [
+        "notanemail",
+        "missing@domain",
+        "@nodomain.com",
+        "spaces in@email.com",
+        "toolong" + "a" * 250 + "@domain.com"
+    ]
+    
+    for email in invalid_emails:
+        response = client.post(
+            f"/activities/Soccer%20Team/signup?email={email}"
+        )
+        assert response.status_code == 400
+        assert response.json()["detail"] == "Invalid email format"
+
+
+def test_unregister_invalid_email_returns_400():
+    """Test that invalid email format returns 400 for unregister"""
+    email = "notanemail"
+    response = client.delete(
+        f"/activities/Soccer%20Team/signup?email={email}"
+    )
+    
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid email format"
+
+
+def test_signup_at_capacity_returns_400():
+    """Test that signup fails when activity is at max capacity"""
+    # Fill the Chess Club to capacity (max_participants: 12)
+    # It already has 2 participants, so add 10 more
+    for i in range(10):
+        email = f"student{i}@mergington.edu"
+        response = client.post(
+            f"/activities/Chess%20Club/signup?email={email}"
+        )
+        assert response.status_code == 200
+    
+    # Try to add one more student when at capacity
+    email = "overflow@mergington.edu"
+    response = client.post(
+        f"/activities/Chess%20Club/signup?email={email}"
+    )
+    
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Activity is at maximum capacity"
